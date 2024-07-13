@@ -6,8 +6,9 @@ import FormField from "@/components/FormField";
 import CustomButton from "@/components/CustomButton";
 import { Link } from "expo-router";
 
-const SignIn = () => {
+const SignUp = () => {
     const [form, setForm] = useState({
+        username: "",
         email: "",
         password: "",
     });
@@ -27,10 +28,20 @@ const SignIn = () => {
                         className="w-[115px] h-[35px] "
                     />
                     <Text className="text-2xl text-white mt-10 font-psemibold">
-                        Log in to Aora
+                        Sign up to Aora
                     </Text>
 
                     {/* Form fields */}
+                    <FormField
+                        title="Username"
+                        value={form.username}
+                        handleChangeText={(e) => {
+                            setForm({ ...form, username: e });
+                        }}
+                        otherStyles="mt-7"
+                        placeholder="Enter your name"
+                    />
+
                     <FormField
                         title="Email"
                         value={form.email}
@@ -53,7 +64,7 @@ const SignIn = () => {
                     />
 
                     <CustomButton
-                        title="Sign in"
+                        title="Sign up"
                         containerStyles="mt-10"
                         handlePress={submitForm}
                         isLoading={isSubmitting}
@@ -61,12 +72,9 @@ const SignIn = () => {
 
                     <View>
                         <Text className="text-white text-center mt-10">
-                            Don't have an account?{" "}
-                            <Link
-                                href="/sign-up"
-                                className="text-secondary font-psemibold"
-                            >
-                                Sign up
+                            Already have an account?{" "}
+                            <Link href="/sign-in" className="text-secondary font-psemibold">
+                                Sign in
                             </Link>
                         </Text>
                     </View>
@@ -76,4 +84,4 @@ const SignIn = () => {
     );
 };
 
-export default SignIn;
+export default SignUp;
