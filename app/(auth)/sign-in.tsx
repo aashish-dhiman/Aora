@@ -4,7 +4,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "@/constants";
 import FormField from "@/components/FormField";
 import CustomButton from "@/components/CustomButton";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
+import { signIn } from "@/lib/appwrite";
+import CustomAlert from "@/components/CustomAlert";
 
 const SignIn = () => {
     const [form, setForm] = useState({
@@ -13,13 +15,51 @@ const SignIn = () => {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const submitForm = () => {
+    const [alertVisible, setAlertVisible] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+
+    const submitForm = async () => {
+        if (!form.email || !form.password) {
+            setAlertMessage("Please fill all details!");
+            setAlertVisible(true);
+            return;
+        }
+        if (form.password.length < 8) {
+            setAlertMessage("Password must be at least 8 characters long!");
+            setAlertVisible(true);
+            return;
+        }
         setIsSubmitting(true);
-        console.log(form);
+        try {
+            const result = await signIn(form.email, form.password);
+
+            //update the global store
+
+            router.replace("/home");
+        } catch (error) {
+            console.log("error: ", error);
+            // Check if error is of type Error
+            let errorMessage = "Something went wrong!";
+            if (error instanceof Error) {
+                errorMessage = error.message.split("AppwriteException:")[1];
+            }
+
+            // Display the error message in an alert
+            setAlertMessage(errorMessage);
+            setAlertVisible(true);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
     return (
         <SafeAreaView className="bg-primary h-full">
             <ScrollView>
+                <CustomAlert
+                    visible={alertVisible}
+                    title="Error"
+                    message={alertMessage}
+                    onClose={() => setAlertVisible(false)}
+                />
                 <View className="w-full justify-center h-full px-4 my-6">
                     <Image
                         source={images?.logo}
